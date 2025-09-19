@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - Kelab Petani</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="bg-gradient-to-br from-green-50 to-emerald-100">
+    <div class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-green-600 text-white shadow-lg">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z"/>
+                        </svg>
+                        <h1 class="text-2xl font-bold">Kelab Petani</h1>
+                    </div>
+                    <div class="hidden md:flex space-x-6">
+                        <a href="{{ url_for('main.home') }}" class="hover:text-green-200 transition">Utama</a>
+                        <a href="#" class="hover:text-green-200 transition">Tentang</a>
+                        <a href="#" class="hover:text-green-200 transition">Aktiviti</a>
+                        <a href="#" class="hover:text-green-200 transition">Ahli</a>
+                        <a href="#" class="hover:text-green-200 transition">Hubungi</a>
+                        <a href="{{ url_for('main.logout') }}" class="hover:text-green-200 transition">Log Keluar</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Profile Section -->
+        <section class="py-16">
+            <div class="container mx-auto px-4">
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-white rounded-lg shadow-lg p-8">
+                        <div class="text-center mb-8">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture }}" alt="{{ user.name }}" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-green-600">
+                            {% else %}
+                                <div class="w-32 h-32 rounded-full mx-auto mb-4 bg-green-600 flex items-center justify-center text-white text-4xl font-bold">
+                                    {{ user.name[0].upper() }}
+                                </div>
+                            {% endif %}
+                            <h2 class="text-3xl font-bold text-green-800">{{ user.name }}</h2>
+                            <p class="text-gray-600">{{ user.email }}</p>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-green-50 p-6 rounded-lg">
+                                <h3 class="text-xl font-semibold text-green-800 mb-4">Maklumat Ahli</h3>
+                                <div class="space-y-3">
+                                    <div>
+                                        <span class="font-medium text-gray-700">Nama:</span>
+                                        <span class="ml-2">{{ user.name }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-medium text-gray-700">Email:</span>
+                                        <span class="ml-2">{{ user.email }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-medium text-gray-700">Tarikh Sertai:</span>
+                                        <span class="ml-2">{{ user.created_at.strftime('%d %B %Y') if user.created_at else 'Tidak tersedia' }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-medium text-gray-700">Status:</span>
+                                        <span class="ml-2">
+                                            {% if user.is_active %}
+                                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">Aktif</span>
+                                            {% else %}
+                                                <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm">Tidak Aktif</span>
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-green-50 p-6 rounded-lg">
+                                <h3 class="text-xl font-semibold text-green-800 mb-4">Tindakan Pantas</h3>
+                                <div class="space-y-3">
+                                    <button class="w-full btn btn-primary bg-green-600 hover:bg-green-700 text-white">
+                                        Kemaskini Profil
+                                    </button>
+                                    <button class="w-full btn btn-outline border-green-600 text-green-600 hover:bg-green-600 hover:text-white">
+                                        Aktiviti Saya
+                                    </button>
+                                    <button class="w-full btn btn-outline border-green-600 text-green-600 hover:bg-green-600 hover:text-white">
+                                        Sijil Keahlian
+                                    </button>
+                                    <a href="{{ url_for('main.logout') }}" class="block w-full btn btn-error bg-red-600 hover:bg-red-700 text-white">
+                                        Log Keluar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="fixed top-4 right-4 z-50">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'success' if category == 'success' else 'error' }} mb-2">
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+</body>
+</html>
