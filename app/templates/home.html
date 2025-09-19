@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelab Petani</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="bg-gradient-to-br from-green-50 to-emerald-100">
+    <div class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-green-600 text-white shadow-lg">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z"/>
+                        </svg>
+                        <h1 class="text-2xl font-bold">Kelab Petani</h1>
+                    </div>
+                    <div class="hidden md:flex space-x-6">
+                        <a href="#" class="hover:text-green-200 transition">Utama</a>
+                        <a href="#" class="hover:text-green-200 transition">Tentang</a>
+                        <a href="#" class="hover:text-green-200 transition">Aktiviti</a>
+                        <a href="#" class="hover:text-green-200 transition">Ahli</a>
+                        <a href="#" class="hover:text-green-200 transition">Hubungi</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="relative py-20">
+            <div class="container mx-auto px-4">
+                <div class="text-center">
+                    <h2 class="text-5xl font-bold text-green-800 mb-6">
+                        Selamat Datang ke Kelab Petani
+                    </h2>
+                    <p class="text-xl text-green-700 mb-8 max-w-3xl mx-auto">
+                        Komuniti petani yang dedikasi untuk pertanian lestari,
+                        pembangunan luar bandar dan pemerkasaan komuniti tempatan.
+                    </p>
+                    <div class="space-x-4">
+                        <button class="btn btn-primary bg-green-600 hover:bg-green-700 text-white">
+                            Sertai Kami
+                        </button>
+                        <button class="btn btn-outline border-green-600 text-green-600 hover:bg-green-600 hover:text-white">
+                            Ketahui Lebih Lanjut
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center text-green-800 mb-12">
+                    Apa Yang Kami Tawarkan
+                </h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Feature 1 -->
+                    <div class="card bg-green-50 shadow-lg">
+                        <div class="card-body">
+                            <div class="text-green-600 mb-4">
+                                <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+                                    <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-green-800 mb-3">Bengkel Pertanian</h3>
+                            <p class="text-gray-700">
+                                Bengkel latihan dan perkongsian pengetahuan mengenai
+                                teknik pertanian moden dan lestari.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="card bg-green-50 shadow-lg">
+                        <div class="card-body">
+                            <div class="text-green-600 mb-4">
+                                <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-green-800 mb-3">Rangkaian Komuniti</h3>
+                            <p class="text-gray-700">
+                                Sambung dengan petani lain dan kembangkan rangkaian
+                                profesional anda dalam industri pertanian.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="card bg-green-50 shadow-lg">
+                        <div class="card-body">
+                            <div class="text-green-600 mb-4">
+                                <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-green-800 mb-3">Pembelajaran Berterusan</h3>
+                            <p class="text-gray-700">
+                                Akses kepada sumber pembelajaran dan panduan terkini
+                                mengenai teknologi pertanian.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="py-16 bg-green-700 text-white">
+            <div class="container mx-auto px-4 text-center">
+                <h2 class="text-3xl font-bold mb-4">Sertai Komuniti Kami Hari Ini</h2>
+                <p class="text-xl mb-8">Bersama-sama kita majukan industri pertanian negara</p>
+                <button class="btn btn-secondary bg-white text-green-700 hover:bg-gray-100">
+                    Daftar Ahli
+                </button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-green-800 text-white py-8">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h3 class="text-xl font-bold mb-2">Kelab Petani</h3>
+                        <p class="text-green-200">Majukan pertanian, bangunkan komuniti</p>
+                    </div>
+                    <div class="flex space-x-6">
+                        <a href="#" class="hover:text-green-200">Facebook</a>
+                        <a href="#" class="hover:text-green-200">Instagram</a>
+                        <a href="#" class="hover:text-green-200">WhatsApp</a>
+                        <a href="#" class="hover:text-green-200">Email</a>
+                    </div>
+                </div>
+                <div class="mt-8 text-center text-green-300">
+                    <p>&copy; 2024 Kelab Petani. Hak cipta terpelihara.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

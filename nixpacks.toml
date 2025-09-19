@@ -1,0 +1,23 @@
+[phases.setup]
+nixPkgs = ["python3", "gcc", "sqlite"]
+
+[phases.install]
+cmds = [
+    "python -m venv /opt/venv",
+    ". /opt/venv/bin/activate && pip install --no-cache-dir --upgrade pip",
+    ". /opt/venv/bin/activate && pip install --no-cache-dir -r requirements.txt"
+]
+
+[phases.build]
+cmds = [
+    "mkdir -p /app/templates /app/static",
+    "cp -r templates/* /app/templates/ 2>/dev/null || true",
+    "cp -r static/* /app/static/ 2>/dev/null || true",
+]
+
+[start]
+cmd = "cd /app && /opt/venv/bin/gunicorn --bind 0.0.0.0:$PORT --workers 4 --timeout 120 app:app"
+
+[variables]
+PORT = "8000"
+PYTHONUNBUFFERED = "1"
