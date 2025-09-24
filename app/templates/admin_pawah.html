@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Pawah - Kelab Petani</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="bg-gradient-to-br from-green-50 to-emerald-100">
+<div class="min-h-screen">
+  <nav class="bg-green-600 text-white shadow-lg">
+    <div class="container mx-auto px-4 py-4 flex justify-between">
+      <a href="{{ url_for('main.home') }}" class="font-bold">Kelab Petani</a>
+      <div class="hidden md:flex space-x-6">
+        <a href="{{ url_for('main.admin_home') }}" class="hover:text-green-200">Ringkasan</a>
+        <a href="{{ url_for('main.admin_products') }}" class="hover:text-green-200">Produk</a>
+        <a href="{{ url_for('main.admin_pawah') }}" class="hover:text-green-200">Projek Pawah</a>
+        <a href="{{ url_for('main.admin_logs') }}" class="hover:text-green-200">Log</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="container mx-auto px-4 py-10">
+    <h1 class="text-3xl font-bold text-green-800 mb-6">Semua Projek Pawah</h1>
+
+    <div class="bg-white rounded shadow divide-y">
+      {% for pr in projects %}
+        <div class="p-4 flex justify-between items-center">
+          <div>
+            <div class="font-medium">{{ pr.title }}</div>
+            <div class="text-sm text-gray-600">{{ pr.crop_type }} • {{ pr.location }}</div>
+            <div class="text-xs text-gray-500 mt-1">{{ 'Diluluskan' if pr.is_approved else 'Menunggu kelulusan' }} • Status: {{ pr.status|capitalize }}</div>
+          </div>
+          <div class="flex gap-2">
+            <form method="post" action="{{ url_for('main.admin_approve_pawah', project_id=pr.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <input type="hidden" name="approve" value="true" />
+              <button class="btn btn-success btn-sm">Lulus</button>
+            </form>
+            <form method="post" action="{{ url_for('main.admin_approve_pawah', project_id=pr.id) }}" class="flex items-center gap-2">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <input type="hidden" name="approve" value="false" />
+              <input name="reason" class="input input-bordered input-sm" placeholder="Sebab (pilihan)" />
+              <button class="btn btn-error btn-sm">Tolak</button>
+            </form>
+          </div>
+        </div>
+      {% else %}
+        <div class="p-4 text-gray-600">Tiada projek.</div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+</body>
+</html>

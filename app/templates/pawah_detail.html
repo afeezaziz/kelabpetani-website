@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Butiran Projek Pawah - Kelab Petani</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="bg-gradient-to-br from-green-50 to-emerald-100">
+<div class="min-h-screen">
+    <nav class="bg-green-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z"/>
+                    </svg>
+                    <h1 class="text-2xl font-bold">Kelab Petani</h1>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="{{ url_for('main.home') }}" class="hover:text-green-200 transition">Utama</a>
+                    <a href="{{ url_for('main.marketplace') }}" class="hover:text-green-200 transition">Marketplace</a>
+                    <a href="{{ url_for('main.pawah_list') }}" class="hover:text-green-200 transition">Pawah</a>
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('main.orders_home') }}" class="hover:text-green-200 transition">Pesanan</a>
+                    {% endif %}
+                    {% if session.get('is_admin') %}
+                        <a href="{{ url_for('main.admin_home') }}" class="hover:text-green-200 transition">Admin</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="py-10">
+        <div class="container mx-auto px-4 max-w-5xl">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="mb-4">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'success' if category == 'success' else 'error' }} mb-2">
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="bg-white rounded shadow p-6">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h2 class="text-3xl font-bold text-green-800 mb-2">{{ project.title }}</h2>
+                        <p class="text-gray-600">{{ project.crop_type }} • {{ project.location }}</p>
+                    </div>
+                    <div>
+                        <span class="badge {{ 'badge-success' if project.status == 'open' else 'badge-ghost' }}">{{ project.status|capitalize }}</span>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-3 gap-6 mt-4">
+                    <div class="md:col-span-2">
+                        <p class="text-gray-700 whitespace-pre-line">{{ project.description or 'Tiada penerangan.' }}</p>
+                        {% if session.get('user_id') == project.owner_id %}
+                            {% if not project.is_approved %}
+                                <div class="alert alert-warning mt-4">
+                                    <span>Menunggu kelulusan admin.</span>
+                                </div>
+                                {% if project.rejection_reason %}
+                                    <div class="alert alert-error mt-2">
+                                        <span>Sebab penolakan terdahulu: {{ project.rejection_reason }}</span>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                        <div class="mt-4 grid grid-cols-2 gap-4 text-gray-700">
+                            <div>
+                                <div class="font-medium">Modal Diperlukan</div>
+                                <div>{{ ("RM %.2f"|format(project.capital_required)) }}</div>
+                            </div>
+                            <div>
+                                <div class="font-medium">Tempoh</div>
+                                <div>{{ project.duration_months }} bulan</div>
+                            </div>
+                            <div>
+                                <div class="font-medium">Kongsi Pemilik</div>
+                                <div>{{ project.owner_share_percent }}%</div>
+                            </div>
+                            <div>
+                                <div class="font-medium">Kongsi Petani</div>
+                                <div>{{ project.farmer_share_percent }}%</div>
+                            </div>
+                        </div>
+
+                        <!-- Messaging -->
+                        {% if session.get('user_id') in [project.owner_id, project.farmer_id] %}
+                        <div class="mt-8">
+                            <div class="font-medium mb-2">Mesej</div>
+                            <div class="bg-green-50 rounded p-4 max-h-80 overflow-y-auto space-y-3">
+                                {% for m in messages %}
+                                    <div class="bg-white p-3 rounded shadow">
+                                        <div class="text-sm text-gray-600">{{ m.sender.name }} • {{ m.created_at.strftime('%d %b %Y %H:%M') if m.created_at else '' }}</div>
+                                        <div class="mt-1">{{ m.content }}</div>
+                                    </div>
+                                {% else %}
+                                    <div class="text-gray-600">Tiada mesej lagi.</div>
+                                {% endfor %}
+                            </div>
+                            <form method="post" action="{{ url_for('main.pawah_add_message', project_id=project.id) }}" class="mt-3 flex gap-2">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <input name="content" class="input input-bordered w-full" placeholder="Tulis mesej..." />
+                                <button type="submit" class="btn btn-primary bg-green-600 hover:bg-green-700 text-white">Hantar</button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div class="bg-green-50 rounded p-4">
+                            <div class="space-y-2 text-gray-700">
+                                <div><span class="font-medium">Pemilik:</span> {{ owner.name if owner else 'Tidak diketahui' }}</div>
+                                <div><span class="font-medium">Petani:</span> {{ farmer.name if farmer else '-' }}</div>
+                            </div>
+                            {% if project.status == 'open' %}
+                                {% if session.get('user_id') %}
+                                    {% if owner and owner.id == session.get('user_id') %}
+                                        <div class="text-sm text-gray-600 mt-3">Ini projek anda. Menunggu petani menerima.</div>
+                                    {% else %}
+                                        <form method="post" action="{{ url_for('main.pawah_accept', project_id=project.id) }}" class="mt-4">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                            <button type="submit" class="btn btn-primary w-full bg-green-600 hover:bg-green-700 text-white">Terima Projek</button>
+                                        </form>
+                                    {% endif %}
+                                {% else %}
+                                    <a class="btn btn-outline w-full mt-4" href="{{ url_for('main.login') }}">Log masuk untuk menerima</a>
+                                {% endif %}
+                            {% else %}
+                                <div class="text-sm text-gray-600 mt-3">Projek ini telah {{ project.status }}.</div>
+                                {% if session.get('user_id') in [project.owner_id, project.farmer_id] %}
+                                    <div class="mt-3 space-y-2">
+                                        {% if project.status == 'accepted' %}
+                                            <form method="post" action="{{ url_for('main.pawah_start', project_id=project.id) }}">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                                <button class="btn btn-primary w-full">Mula Projek</button>
+                                            </form>
+                                        {% endif %}
+                                        {% if project.status in ['accepted','in_progress'] %}
+                                            <form method="post" action="{{ url_for('main.pawah_complete', project_id=project.id) }}">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                                <button class="btn btn-success w-full">Tandakan Selesai</button>
+                                            </form>
+                                            <form method="post" action="{{ url_for('main.pawah_cancel', project_id=project.id) }}">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                                <button class="btn btn-error w-full">Batal Projek</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <a href="{{ url_for('main.pawah_list') }}" class="link text-green-700">&larr; Kembali ke senarai</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

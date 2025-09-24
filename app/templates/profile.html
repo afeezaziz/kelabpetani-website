@@ -21,10 +21,13 @@
                     </div>
                     <div class="hidden md:flex space-x-6">
                         <a href="{{ url_for('main.home') }}" class="hover:text-green-200 transition">Utama</a>
-                        <a href="#" class="hover:text-green-200 transition">Tentang</a>
-                        <a href="#" class="hover:text-green-200 transition">Aktiviti</a>
-                        <a href="#" class="hover:text-green-200 transition">Ahli</a>
-                        <a href="#" class="hover:text-green-200 transition">Hubungi</a>
+                        <a href="{{ url_for('main.marketplace') }}" class="hover:text-green-200 transition">Marketplace</a>
+                        <a href="{{ url_for('main.pawah_list') }}" class="hover:text-green-200 transition">Pawah</a>
+                        <a href="{{ url_for('main.orders_home') }}" class="hover:text-green-200 transition">Pesanan</a>
+                        {% if session.get('is_admin') %}
+                            <a href="{{ url_for('main.admin_home') }}" class="hover:text-green-200 transition">Admin</a>
+                        {% endif %}
+                        <a href="{{ url_for('main.profile') }}" class="hover:text-green-200 transition">Profil</a>
                         <a href="{{ url_for('main.logout') }}" class="hover:text-green-200 transition">Log Keluar</a>
                     </div>
                 </div>

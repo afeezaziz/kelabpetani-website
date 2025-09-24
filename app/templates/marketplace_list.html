@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace - Kelab Petani</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="bg-gradient-to-br from-green-50 to-emerald-100">
+<div class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-green-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z"/>
+                    </svg>
+                    <h1 class="text-2xl font-bold">Kelab Petani</h1>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="{{ url_for('main.home') }}" class="hover:text-green-200 transition">Utama</a>
+                    <a href="{{ url_for('main.marketplace') }}" class="hover:text-green-200 transition">Marketplace</a>
+                    <a href="{{ url_for('main.pawah_list') }}" class="hover:text-green-200 transition">Pawah</a>
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('main.orders_home') }}" class="hover:text-green-200 transition">Pesanan</a>
+                        {% if session.get('is_admin') %}
+                            <a href="{{ url_for('main.admin_home') }}" class="hover:text-green-200 transition">Admin</a>
+                        {% endif %}
+                        <a href="{{ url_for('main.logout') }}" class="hover:text-green-200 transition">Log Keluar</a>
+                    {% else %}
+                        <a href="{{ url_for('main.login') }}" class="hover:text-green-200 transition">Log Masuk</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="py-10">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-3xl font-bold text-green-800">Marketplace</h2>
+                <div class="flex gap-2">
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('main.my_listings') }}" class="btn">Senarai Saya</a>
+                    {% endif %}
+                    <a href="{{ url_for('main.new_product') }}" class="btn btn-primary bg-green-600 hover:bg-green-700 text-white">Tambah Produk</a>
+                </div>
+            </div>
+
+            <!-- Filters & Search -->
+            <form method="get" class="bg-white rounded shadow p-4 mb-6 grid md:grid-cols-5 gap-3">
+                <input type="text" name="q" value="{{ q or '' }}" placeholder="Cari tajuk/perincian" class="input input-bordered w-full" />
+                <input type="text" name="category" value="{{ category or '' }}" placeholder="Kategori" class="input input-bordered w-full" />
+                <input type="text" name="location" value="{{ location or '' }}" placeholder="Lokasi" class="input input-bordered w-full" />
+                <input type="number" step="0.01" min="0" name="min_price" value="{{ min_price or '' }}" placeholder="Harga min (RM)" class="input input-bordered w-full" />
+                <input type="number" step="0.01" min="0" name="max_price" value="{{ max_price or '' }}" placeholder="Harga maks (RM)" class="input input-bordered w-full" />
+                <div class="md:col-span-5 flex gap-2 justify-end">
+                    <a class="btn" href="{{ url_for('main.marketplace') }}">Set Semula</a>
+                    <button class="btn btn-primary bg-green-600 hover:bg-green-700 text-white">Cari</button>
+                </div>
+            </form>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="mb-4">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'success' if category == 'success' else 'error' }} mb-2">
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% if products %}
+                <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {% for product in products %}
+                        <a href="{{ url_for('main.product_detail', product_id=product.id) }}" class="card bg-white shadow hover:shadow-lg transition overflow-hidden">
+                            {% if product.image_url %}
+                                <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-48 object-cover">
+                            {% else %}
+                                <div class="w-full h-48 bg-green-100 flex items-center justify-center text-green-700">
+                                    <span class="text-4xl font-bold">{{ product.title[0].upper() }}</span>
+                                </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <h3 class="card-title text-green-800">{{ product.title }}</h3>
+                                <p class="text-gray-600">{{ ("RM %.2f"|format(product.price)) }}{% if product.unit %} / {{ product.unit }}{% endif %}</p>
+                                {% if product.quantity is not none %}
+                                    <p class="text-sm text-gray-500">Stok: {{ product.quantity }}</p>
+                                {% endif %}
+                                <div class="card-actions justify-end">
+                                    <span class="badge badge-outline">{{ product.category or 'Umum' }}</span>
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+                <!-- Pagination -->
+                {% if pagination and pagination.pages > 1 %}
+                    <div class="mt-6 flex justify-center items-center gap-2">
+                        {% if pagination.has_prev %}
+                            <a class="btn btn-sm" href="{{ url_for('main.marketplace', q=q, category=category, location=location, min_price=min_price, max_price=max_price, page=pagination.prev_num) }}">&laquo; Sebelum</a>
+                        {% endif %}
+                        <span class="text-sm">Halaman {{ pagination.page }} dari {{ pagination.pages }}</span>
+                        {% if pagination.has_next %}
+                            <a class="btn btn-sm" href="{{ url_for('main.marketplace', q=q, category=category, location=location, min_price=min_price, max_price=max_price, page=pagination.next_num) }}">Seterusnya &raquo;</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="bg-white p-8 rounded shadow text-center text-gray-600">Tiada produk buat masa ini.</div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+</body>
+</html>

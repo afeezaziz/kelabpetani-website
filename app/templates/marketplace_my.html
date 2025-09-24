@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Senarai Saya - Kelab Petani</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="bg-gradient-to-br from-green-50 to-emerald-100">
+<div class="min-h-screen">
+  <nav class="bg-green-600 text-white shadow-lg">
+    <div class="container mx-auto px-4 py-4 flex justify-between">
+      <a href="{{ url_for('main.home') }}" class="font-bold">Kelab Petani</a>
+      <div class="hidden md:flex space-x-6">
+        <a href="{{ url_for('main.marketplace') }}" class="hover:text-green-200">Marketplace</a>
+        <a href="{{ url_for('main.pawah_list') }}" class="hover:text-green-200">Pawah</a>
+        <a href="{{ url_for('main.orders_home') }}" class="hover:text-green-200">Pesanan</a>
+        {% if session.get('is_admin') %}
+          <a href="{{ url_for('main.admin_home') }}" class="hover:text-green-200">Admin</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <section class="container mx-auto px-4 py-10">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-3xl font-bold text-green-800">Senarai Saya</h1>
+      <a href="{{ url_for('main.new_product') }}" class="btn btn-primary bg-green-600 hover:bg-green-700 text-white">Tambah Produk</a>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-4">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'success' if category == 'success' else 'error' }} mb-2">
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if products %}
+      <div class="bg-white rounded shadow divide-y">
+        {% for p in products %}
+          <div class="p-4 flex items-start justify-between gap-4">
+            <div>
+              <div class="font-medium">{{ p.title }}</div>
+              <div class="text-sm text-gray-600">{{ ("RM %.2f"|format(p.price)) }}{% if p.unit %} / {{ p.unit }}{% endif %} • {{ p.category or 'Umum' }}</div>
+              {% if p.quantity is not none %}
+                <div class="text-xs text-gray-500 mt-1">Stok: {{ p.quantity }}</div>
+              {% endif %}
+              <div class="mt-1">
+                {% if p.is_active %}
+                  <span class="badge badge-success">Aktif</span>
+                {% else %}
+                  <span class="badge">Diarkib</span>
+                {% endif %}
+                {% if not p.is_approved %}
+                  <span class="badge badge-warning ml-2">Menunggu Kelulusan</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-2">
+              {% if p.is_active %}
+                <form method="post" action="{{ url_for('main.product_archive', product_id=p.id) }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                  <button class="btn btn-outline">Arkib</button>
+                </form>
+              {% else %}
+                <form method="post" action="{{ url_for('main.product_unarchive', product_id=p.id) }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                  <button class="btn">Aktifkan</button>
+                </form>
+              {% endif %}
+              <a href="{{ url_for('main.product_edit', product_id=p.id) }}" class="btn">Edit</a>
+              <a href="{{ url_for('main.product_detail', product_id=p.id) }}" class="btn btn-ghost">Lihat</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="bg-white p-8 rounded shadow text-center text-gray-600">Tiada senarai lagi. Cuba tambah produk pertama anda.</div>
+    {% endif %}
+  </section>
+</div>
+</body>
+</html>

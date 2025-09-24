@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log Audit - Kelab Petani</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="bg-gradient-to-br from-green-50 to-emerald-100">
+<div class="min-h-screen">
+  <nav class="bg-green-600 text-white shadow-lg">
+    <div class="container mx-auto px-4 py-4 flex justify-between">
+      <a href="{{ url_for('main.home') }}" class="font-bold">Kelab Petani</a>
+      <div class="hidden md:flex space-x-6">
+        <a href="{{ url_for('main.admin_home') }}" class="hover:text-green-200">Ringkasan</a>
+        <a href="{{ url_for('main.admin_products') }}" class="hover:text-green-200">Produk</a>
+        <a href="{{ url_for('main.admin_pawah') }}" class="hover:text-green-200">Projek Pawah</a>
+        <a href="{{ url_for('main.admin_logs') }}" class="hover:text-green-200">Log</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="container mx-auto px-4 py-10">
+    <h1 class="text-3xl font-bold text-green-800 mb-6">Log Audit</h1>
+
+    <form method="get" class="bg-white rounded shadow p-4 mb-6 grid md:grid-cols-4 gap-3">
+      <select name="entity_type" class="select select-bordered w-full">
+        <option value="">Semua entiti</option>
+        {% for et in entity_types %}
+          <option value="{{ et }}" {% if entity_type == et %}selected{% endif %}>{{ et|capitalize }}</option>
+        {% endfor %}
+      </select>
+      <select name="action" class="select select-bordered w-full">
+        <option value="">Semua tindakan</option>
+        {% for a in actions %}
+          <option value="{{ a }}" {% if action == a %}selected{% endif %}>{{ a }}</option>
+        {% endfor %}
+      </select>
+      <input type="number" name="actor_id" value="{{ actor_id or '' }}" placeholder="ID pelaku" class="input input-bordered w-full" />
+      <div class="flex gap-2 justify-end md:col-span-4">
+        <a class="btn" href="{{ url_for('main.admin_logs') }}">Set Semula</a>
+        <button class="btn btn-primary bg-green-600 hover:bg-green-700 text-white">Tapis</button>
+      </div>
+    </form>
+
+    {% if logs %}
+      <div class="bg-white rounded shadow overflow-x-auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Masa</th>
+              <th>Entiti</th>
+              <th>ID</th>
+              <th>Tindakan</th>
+              <th>Status Asal</th>
+              <th>Status Baharu</th>
+              <th>Pelaku</th>
+              <th>Maklumat</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in logs %}
+              <tr>
+                <td class="whitespace-nowrap">{{ log.created_at.strftime('%d %b %Y %H:%M') if log.created_at else '-' }}</td>
+                <td class="whitespace-nowrap">{{ log.entity_type }}</td>
+                <td>
+                  {% if log.entity_type == 'order' %}
+                    <a class="link text-green-700" href="{{ url_for('main.order_detail', order_id=log.entity_id) }}">{{ log.entity_id }}</a>
+                  {% elif log.entity_type == 'pawah' %}
+                    <a class="link text-green-700" href="{{ url_for('main.pawah_detail', project_id=log.entity_id) }}">{{ log.entity_id }}</a>
+                  {% elif log.entity_type == 'product' %}
+                    <a class="link text-green-700" href="{{ url_for('main.product_detail', product_id=log.entity_id) }}">{{ log.entity_id }}</a>
+                  {% else %}
+                    {{ log.entity_id }}
+                  {% endif %}
+                </td>
+                <td class="whitespace-nowrap">{{ log.action }}</td>
+                <td>{{ log.old_status or '-' }}</td>
+                <td>{{ log.new_status or '-' }}</td>
+                <td class="whitespace-nowrap">{{ log.actor.name if log.actor else '-' }}</td>
+                <td class="max-w-md truncate" title="{{ log.meta or '' }}">{{ log.meta or '-' }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if pagination and pagination.pages > 1 %}
+        <div class="mt-6 flex justify-center items-center gap-2">
+          {% if pagination.has_prev %}
+            <a class="btn btn-sm" href="{{ url_for('main.admin_logs', entity_type=entity_type, action=action, actor_id=actor_id, page=pagination.prev_num) }}">&laquo; Sebelum</a>
+          {% endif %}
+          <span class="text-sm">Halaman {{ pagination.page }} dari {{ pagination.pages }}</span>
+          {% if pagination.has_next %}
+            <a class="btn btn-sm" href="{{ url_for('main.admin_logs', entity_type=entity_type, action=action, actor_id=actor_id, page=pagination.next_num) }}">Seterusnya &raquo;</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="bg-white p-8 rounded shadow text-center text-gray-600">Tiada log.</div>
+    {% endif %}
+  </section>
+</div>
+</body>
+</html>

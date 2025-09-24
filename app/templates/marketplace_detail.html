@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produk - Kelab Petani</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="bg-gradient-to-br from-green-50 to-emerald-100">
+<div class="min-h-screen">
+    <nav class="bg-green-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z"/>
+                    </svg>
+                    <h1 class="text-2xl font-bold">Kelab Petani</h1>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="{{ url_for('main.home') }}" class="hover:text-green-200 transition">Utama</a>
+                    <a href="{{ url_for('main.marketplace') }}" class="hover:text-green-200 transition">Marketplace</a>
+                    <a href="{{ url_for('main.pawah_list') }}" class="hover:text-green-200 transition">Pawah</a>
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('main.orders_home') }}" class="hover:text-green-200 transition">Pesanan</a>
+                    {% endif %}
+                    {% if session.get('is_admin') %}
+                        <a href="{{ url_for('main.admin_home') }}" class="hover:text-green-200 transition">Admin</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="py-10">
+        <div class="container mx-auto px-4 max-w-5xl">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="mb-4">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'success' if category == 'success' else 'error' }} mb-2">
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="bg-white rounded shadow overflow-hidden">
+                {% if product.image_url %}
+                    <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-80 object-cover">
+                {% endif %}
+                <div class="p-6 grid md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2">
+                        <h2 class="text-3xl font-bold text-green-800 mb-2">{{ product.title }}</h2>
+                        <p class="text-gray-700 mb-4">{{ product.description or 'Tiada penerangan.' }}</p>
+                        <div class="text-gray-600 space-y-1">
+                            <p><span class="font-medium">Kategori:</span> {{ product.category or 'Umum' }}</p>
+                            {% if product.unit %}
+                                <p><span class="font-medium">Unit:</span> {{ product.unit }}</p>
+                            {% endif %}
+                            {% if product.min_order_qty %}
+                                <p><span class="font-medium">Min. Pesanan:</span> {{ product.min_order_qty }}</p>
+                            {% endif %}
+                            {% if product.location %}
+                                <p><span class="font-medium">Lokasi:</span> {{ product.location }}</p>
+                            {% endif %}
+                            <p><span class="font-medium">Penjual:</span> {{ product.seller.name }}</p>
+                            {% if product.contact_phone %}
+                                <p><span class="font-medium">Hubungi:</span> {{ product.contact_phone }}</p>
+                            {% endif %}
+                            {% if session.get('user_id') == product.seller_id %}
+                                {% if not product.is_approved %}
+                                    <div class="alert alert-warning mt-3">
+                                        <span>Menunggu kelulusan admin.</span>
+                                    </div>
+                                    {% if product.rejection_reason %}
+                                        <div class="alert alert-error mt-2">
+                                            <span>Sebab penolakan terdahulu: {{ product.rejection_reason }}</span>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                                {% if not product.is_active %}
+                                    <div class="alert mt-2">
+                                        <span>Produk ini sedang diarkibkan.</span>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="bg-green-50 p-4 rounded">
+                            <div class="text-2xl font-bold text-green-800 mb-3">
+                                {{ ("RM %.2f"|format(product.price)) }}{% if product.unit %} / {{ product.unit }}{% endif %}
+                            </div>
+                            {% if product.quantity is not none %}
+                                <div class="text-sm text-gray-600 mb-3">Stok: {{ product.quantity }}</div>
+                            {% endif %}
+                            {% set is_owner = (session.get('user_id') == product.seller_id) %}
+                            {% if not is_owner and product.is_approved and product.is_active %}
+                                <form method="post" class="space-y-3">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                    <label class="block text-sm">Kuantiti</label>
+                                    <input type="number" name="quantity" min="1" value="1" class="input input-bordered w-full" />
+                                    <button type="submit" class="btn btn-primary w-full bg-green-600 hover:bg-green-700 text-white">Buat Pesanan</button>
+                                </form>
+                            {% else %}
+                                {% if is_owner %}
+                                    <a href="{{ url_for('main.product_edit', product_id=product.id) }}" class="btn w-full">Edit Produk</a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <a href="{{ url_for('main.marketplace') }}" class="link text-green-700">&larr; Kembali ke Marketplace</a>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

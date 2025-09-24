@@ -7,12 +7,13 @@ from alembic import context
 
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(current_dir)
+if project_root not in sys.path:
+    sys.path.append(project_root)
 
-from app import create_app, db
-from app.models import User
-
-app = create_app()
+from app.extensions import db
+from app.models import User, Product, Order, PawahProject, Message
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

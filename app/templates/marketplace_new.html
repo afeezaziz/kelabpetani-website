@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Produk - Kelab Petani</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="bg-gradient-to-br from-green-50 to-emerald-100">
+<div class="min-h-screen">
+    <nav class="bg-green-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z"/>
+                    </svg>
+                    <h1 class="text-2xl font-bold">Kelab Petani</h1>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="{{ url_for('main.home') }}" class="hover:text-green-200 transition">Utama</a>
+                    <a href="{{ url_for('main.marketplace') }}" class="hover:text-green-200 transition">Marketplace</a>
+                    <a href="{{ url_for('main.pawah_list') }}" class="hover:text-green-200 transition">Pawah</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="py-10">
+        <div class="container mx-auto px-4 max-w-3xl">
+            <h2 class="text-3xl font-bold text-green-800 mb-6">Tambah Produk</h2>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="mb-4">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'success' if category == 'success' else 'error' }} mb-2">
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="post" class="bg-white rounded p-6 shadow space-y-4">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-medium mb-1">Tajuk</label>
+                        <input name="title" required class="input input-bordered w-full" placeholder="Contoh: Benih Cili" />
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-1">Harga (RM)</label>
+                        <input name="price" required type="number" step="0.01" min="0" class="input input-bordered w-full" placeholder="0.00" />
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-1">Unit</label>
+                        <input name="unit" class="input input-bordered w-full" placeholder="kg / pek / unit" />
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-1">Minimum Pesanan (qty)</label>
+                        <input name="min_order_qty" type="number" min="1" class="input input-bordered w-full" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-medium mb-1">Gambar (URL)</label>
+                    <input name="image_url" class="input input-bordered w-full" placeholder="https://..." />
+                </div>
+                <div>
+                    <label class="block font-medium mb-1">Lokasi</label>
+                    <input name="location" class="input input-bordered w-full" placeholder="Kuala Lumpur" />
+                </div>
+                <div>
+                    <label class="block font-medium mb-1">No. Telefon</label>
+                    <input name="contact_phone" class="input input-bordered w-full" placeholder="0123456789" />
+                </div>
+                <div>
+                    <label class="block font-medium mb-1">Penerangan</label>
+                    <textarea name="description" rows="4" class="textarea textarea-bordered w-full" placeholder="Maklumat produk..."></textarea>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <a href="{{ url_for('main.marketplace') }}" class="btn">Batal</a>
+                    <button type="submit" class="btn btn-primary bg-green-600 hover:bg-green-700 text-white">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+</body>
+</html>
